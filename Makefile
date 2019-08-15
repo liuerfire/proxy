@@ -28,7 +28,7 @@ build:
 
 # Build only envoy - fast
 build_envoy:
-	bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) //src/envoy/mixer:envoy
+	bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) //src/envoy
 
 clean:
 	@bazel clean
