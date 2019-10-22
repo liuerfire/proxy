@@ -1,0 +1,13 @@
+stages:
+  - build
+
+build:
+  tags:
+    - med-test
+  stage: build
+  image: registry.cn-beijing.aliyuncs.com/fuckali/fuckali:envoy-build
+  script:
+    - bazel --batch build --config=release //src/envoy:envoy_tar
+  artifacts:
+    paths:
+      - ./bazel-bin/src/envoy/envoy_tar.tar.gz

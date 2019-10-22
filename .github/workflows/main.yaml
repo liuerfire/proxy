@@ -4,14 +4,17 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-16.04
     steps:
-    - uses: actions/checkout@backport
-    - name: build envoy
-      run: |
-        apt-get update && apt-get install -y build-essential cmake golang ninja-build pkg-config zip g++ zlib1g-dev unzip python python3 openjdk-11-jdk
-        curl -Lo /tmp/bazel.deb https://github.com/bazelbuild/bazel/releases/download/0.15.2/bazel_0.15.2-linux-x86_64.deb && sudo dpkg -i /tmp/bazel.deb && rm /tmp/bazel.deb
-        apt-get install -f
-        bazel --batch build --config=release //src/envoy:envoy_tar
+      - uses: actions/checkout@master
+      - name: Build envoy
+        run: |
+          sudo apt-get update && sudo apt-get install -y build-essential cmake golang ninja-build pkg-config zip g++ zlib1g-dev unzip python python3 openjdk-8-jdk
+          curl -Lo /tmp/bazel.deb https://github.com/bazelbuild/bazel/releases/download/0.15.2/bazel_0.15.2-linux-x86_64.deb && sudo dpkg -i /tmp/bazel.deb && rm /tmp/bazel.deb
+          sudo apt-get install -f
+          bazel --batch build --config=release //src/envoy:envoy_tar
+      - name: Archive envoy binary
+        uses: actions/upload-artifact@v1
+        with:
+          name: envoy.tar.gz
+          path: bazel-bin/src/envoy/envoy_tar.tar.gz

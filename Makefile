@@ -26,6 +26,9 @@ TAG ?=
 build:
 	@bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) //...
 
+release:
+	@bazel --batch build -j 4 --config=release //src/envoy:envoy_tar
+
 # Build only envoy - fast
 build_envoy:
 	bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) //src/envoy/mixer:envoy

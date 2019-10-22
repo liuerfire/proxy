@@ -6,7 +6,6 @@ jobs:
       - image: istio/ci:go1.9-bazel0.11
     environment:
       - BAZEL_TEST_ARGS: "--test_env=ENVOY_IP_TEST_VERSIONS=v4only --test_output=all"
-    resource_class: xlarge
     steps:
       - run: curl -Lo /tmp/bazel.deb https://github.com/bazelbuild/bazel/releases/download/0.15.2/bazel_0.15.2-linux-x86_64.deb && sudo dpkg -i /tmp/bazel.deb && rm /tmp/bazel.deb
       - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config
@@ -17,14 +16,8 @@ jobs:
       - restore_cache:
           keys:
             - repo-cache-{{ checksum "WORKSPACE" }}
-      # To build docker containers or run tests in a docker
-      - setup_remote_docker
       - run: rm ~/.gitconfig
-      - run: make check
-      - run: make deb BAZEL_BUILD_ARGS="-j 4"
-      - run: make test
-      - run: make test_asan
-      - run: make test_tsan
+      - run: make release BAZEL_BUILD_ARGS="-j 4"
       - save_cache:
           key: repo-cache-{{ checksum "WORKSPACE" }}
           paths:
@@ -34,33 +27,10 @@ jobs:
           paths:
             - /home/circleci/.cache/bazel
       - store_artifacts:
-          path: /home/circleci/project/bazel-bin/tools/deb/istio-proxy.deb
-          destination: /proxy/deb
-      - store_artifacts:
-          path: /home/circleci/project/bazel-bin/src/envoy/mixer/envoy
-          destination: /proxy/bin
-  macos:
-    macos:
-      xcode: "9.3.0"
-    environment:
-      - BAZEL_TEST_ARGS: "--test_env=ENVOY_IP_TEST_VERSIONS=v4only --test_output=all"
-    steps:
-      - run: sudo ntpdate -vu time.apple.com
-      - run: brew install bazel cmake coreutils go libtool ninja wget
-      - checkout
-      - restore_cache:
-          keys:
-            - bazel-cache-{{ checksum "WORKSPACE" }}-macos
-      - run: rm ~/.gitconfig
-      - run: make test
-      - save_cache:
-          key: bazel-cache-{{ checksum "WORKSPACE" }}-macos
-          paths:
-            - /home/circleci/.cache/bazel
-
+          path: /home/circleci/project/bazel-bin/src/envoy/envoy_tar.tar.gz
+          destination: /proxy/envoy
 workflows:
   version: 2
   all:
     jobs:
       - build
-      - macos
