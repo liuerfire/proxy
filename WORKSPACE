@@ -30,7 +30,7 @@ bind(
 )
 
 # When updating envoy sha manually please update the sha in istio.deps file also
-ENVOY_SHA = "a69f7d48f635e2b0e32edf9b34d0e060411619f3"
+ENVOY_SHA = "edbd9daf17a0a096f17cd6b0e11f08b50fef0c66"
 
 http_archive(
     name = "envoy",
